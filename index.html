@@ -175,7 +175,7 @@ bars.addEventListener("animationend",e=>{if(e.target.parentNode.classList.contai
 let vis=false;new IntersectionObserver(e=>vis=e[0].isIntersecting,{threshold:.3}).observe(story);
 setInterval(()=>story.classList.toggle("paused",!vis||lb.classList.contains("on")),200);
 sel(0);
- // plum blossom divider under each section heading
+// plum blossom divider under each section heading
 const bl=c=>`<svg viewBox="0 0 40 40" style="color:${c}"><g fill="currentColor"><circle cx="20" cy="9" r="8"/><circle cx="31" cy="17" r="8"/><circle cx="27" cy="30" r="8"/><circle cx="13" cy="30" r="8"/><circle cx="9" cy="17" r="8"/></g><circle cx="20" cy="20" r="4" fill="#fff"/></svg>`;
 document.querySelectorAll("section>h2").forEach(h=>h.insertAdjacentHTML("afterend",`<div class="dv"><i></i>${bl("#f2a7bc")}<i></i></div>`));
 // parallax background (image at 50% opacity, set in #bg CSS)
@@ -183,8 +183,9 @@ const bg=$("#bg");bg.style.backgroundImage=`url(${CONFIG.BG})`;$(".cbg").style.b
 const par=()=>{tick=0;const h=document.documentElement,m=Math.max(1,h.scrollHeight-innerHeight),p=scrollY/m;
  bg.style.transform=`translate3d(0,${(0.5-p)*0.2*innerHeight}px,0)`};
 addEventListener("scroll",()=>{tick||(tick=requestAnimationFrame(par))},{passive:true});par();
- // auto scroll: starts after the invitation is opened and 5s without touching; any touch/scroll/key stops it
-const IDLE=5000,SPEED=30; // idle ms before starting, scroll speed in px per second
+$("#totop").onclick=()=>scrollTo({top:0,behavior:"smooth"});
+// auto scroll: starts after the invitation is opened and 5s without touching; any touch/scroll/key stops it
+const IDLE=5000,SPEED=50; // idle ms before starting, scroll speed in px per second
 let opened=false,auto=false,idleT,raf,pos=0;
 const atEnd=()=>scrollY>=document.documentElement.scrollHeight-innerHeight-2;
 const stopAuto=()=>{auto=false;cancelAnimationFrame(raf)};
@@ -202,7 +203,7 @@ $("#open").addEventListener("click",()=>{opened=true;poke()});
 // back-to-top button (appears after scrolling down)
 const topB=$("#top");topB.onclick=()=>scrollTo({top:0,behavior:"smooth"});
 addEventListener("scroll",()=>topB.classList.toggle("on",scrollY>400),{passive:true});
- // falling petals (change PETALS to add/remove)
+// falling petals (change PETALS to add/remove)
 const PETALS=16,cols=["#f9c9d6","#f3a9bf","#fbdde5","#bcd8f0"];
 for(let i=0;i<PETALS;i++){const p=document.createElement("i"),s=10+Math.random()*10;p.className="petal";
  p.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${cols[i%4]};animation-duration:${9+Math.random()*8}s;animation-delay:-${Math.random()*14}s;--dx:${(Math.random()-.5)*160}px`;
