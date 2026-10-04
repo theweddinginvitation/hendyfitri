@@ -51,6 +51,7 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 @media(prefers-reduced-motion:reduce){#cover>*{animation:none!important}}
 #totop{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;margin:0;padding:0;border-radius:50%;font-size:1.3rem}
 #top{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;margin:0;padding:0;border-radius:50%;font-size:1.3rem;opacity:0;pointer-events:none;transition:opacity .3s}#top.on{opacity:1;pointer-events:auto}
+#heroDate{display:block;margin-top:6px}.dt{display:flex;gap:7px;justify-content:center;max-width:340px;margin:auto}.dt div{background:rgba(255,255,255,.65);border-radius:14px;padding:10px 0;flex:1;max-width:78px;box-shadow:0 3px 10px rgba(201,123,146,.22)}.dt small{display:block;font-size:.7rem;letter-spacing:.15em;color:#9a8fa0}.dt b{font-size:1.55rem;color:var(--rose)}.dts{display:block;margin-top:14px;font-size:.95rem;color:var(--sky)}
 </style></head><body>
 <div id="bg"></div>
 <script>
@@ -82,7 +83,7 @@ const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" ta
 <button id="music" aria-label="Music">♪</button><button id="top" aria-label="Back to top">↑</button><button id="totop" aria-label="Back to top">↑</button><audio id="aud" loop></audio>
 
 <section><p><h1>We are getting married!</h1></p><img class="pic" id="hero" alt=""><h1>Hendy &amp; Fitri</h1>
-<a id="heroDate" target="_blank" rel="noopener"><b><h3>Sunday, 06 December 2026</h3></b></a>
+<a id="heroDate" target="_blank" rel="noopener"><span class="dt"><div><small>DAY</small><b>SUN</b></div><div><small>DATE</small><b>06</b></div><div><small>MONTH</small><b>DEC</b></div><div><small>YEAR</small><b>2026</b></div></span></a></section>
  <p id="inv" style="font-style:italic;white-space:pre-line;margin-bottom:28px"></p>
  <div class="card"><h3>“Two souls, but a single thought. Two hearts that beat as one.” – John Keats</h3></div></section>
  
@@ -185,7 +186,7 @@ const par=()=>{tick=0;const h=document.documentElement,m=Math.max(1,h.scrollHeig
 addEventListener("scroll",()=>{tick||(tick=requestAnimationFrame(par))},{passive:true});par();
 $("#totop").onclick=()=>scrollTo({top:0,behavior:"smooth"});
 // auto scroll: starts after the invitation is opened and 5s without touching; any touch/scroll/key stops it
-const IDLE=5000,SPEED=50; // idle ms before starting, scroll speed in px per second
+const IDLE=10000,SPEED=30; // idle ms before starting, scroll speed in px per second
 let opened=false,auto=false,idleT,raf,pos=0;
 const atEnd=()=>scrollY>=document.documentElement.scrollHeight-innerHeight-2;
 const stopAuto=()=>{auto=false;cancelAnimationFrame(raf)};
