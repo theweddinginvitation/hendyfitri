@@ -53,6 +53,7 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 #top{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;margin:0;padding:0;border-radius:50%;font-size:1.3rem;opacity:0;pointer-events:none;transition:opacity .3s}#top.on{opacity:1;pointer-events:auto}
 #heroDate{display:block;margin-top:6px}.dt{display:flex;gap:7px;justify-content:center;max-width:340px;margin:auto}.dt div{background:rgba(255,255,255,.65);border-radius:14px;padding:10px 0;flex:1;max-width:78px;box-shadow:0 3px 10px rgba(201,123,146,.22)}.dt small{display:block;font-size:.7rem;letter-spacing:.15em;color:#9a8fa0}.dt b{font-size:1.55rem;color:var(--rose)}.dts{display:block;margin-top:14px;font-size:.95rem;color:var(--sky)}
 .cd div{color:#9a8fa0}.cd b{color:var(--rose)}
+#ad{white-space:pre-line}
 </style></head><body>
 <div id="bg"></div>
 <script>
@@ -80,7 +81,7 @@ const calLink=e=>"https://calendar.google.com/calendar/render?action=TEMPLATE&ct
 const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" target="_blank" rel="noopener"><b> ${e.day}<br>${e.time}</b> ⎘</a><p><b>${e.place}</b><br>${e.addr.replace(/\s*\n\s*/g,"<br>")}</p><a class="btn" href="${e.map}" target="_blank" rel="noopener"> Open Map</a></div>`;
 </script>
 
-<div id="cover"><div class="cbg"></div><div class="xi">囍</div><p>The Wedding of</p><h1>Hendy <br> &amp; <br>Fitri</h1><p>Dear</p><h2 id="g1"></h2><button id="open">Open Invitation</button></div>
+<div id="cover"><div class="cbg"></div><div class="xi">囍</div><p>The Wedding of</p><h1>Hendy <br> &amp; <br>Fitri</h1><p>Dear,</p><h2 id="g1"></h2><button id="open">Open Invitation</button></div>
 <button id="music" aria-label="Music">♪</button><button id="top" aria-label="Back to top">↑</button><audio id="aud" loop></audio>
 
 <section><p><h1>We are getting married!</h1></p><img class="pic" id="hero" alt=""><h1>Hendy &amp; Fitri</h1>
