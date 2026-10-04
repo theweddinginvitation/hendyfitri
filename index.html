@@ -199,7 +199,10 @@ const startAuto=()=>{
 const poke=()=>{stopAuto();clearTimeout(idleT);if(opened)idleT=setTimeout(startAuto,IDLE)};
 ["touchstart","touchmove","touchend","wheel","keydown","mousedown","click","input"].forEach(ev=>addEventListener(ev,poke,{passive:true}));
 $("#open").addEventListener("click",()=>{opened=true;poke()});
-// falling petals (change PETALS to add/remove)
+// back-to-top button (appears after scrolling down)
+const topB=$("#top");topB.onclick=()=>scrollTo({top:0,behavior:"smooth"});
+addEventListener("scroll",()=>topB.classList.toggle("on",scrollY>400),{passive:true});
+ // falling petals (change PETALS to add/remove)
 const PETALS=16,cols=["#f9c9d6","#f3a9bf","#fbdde5","#bcd8f0"];
 for(let i=0;i<PETALS;i++){const p=document.createElement("i"),s=10+Math.random()*10;p.className="petal";
  p.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${cols[i%4]};animation-duration:${9+Math.random()*8}s;animation-delay:-${Math.random()*14}s;--dx:${(Math.random()-.5)*160}px`;
