@@ -53,7 +53,6 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 #top{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;margin:0;padding:0;border-radius:50%;font-size:1.3rem;opacity:0;pointer-events:none;transition:opacity .3s}#top.on{opacity:1;pointer-events:auto}
 #heroDate{display:block;margin-top:6px}.dt{display:flex;gap:7px;justify-content:center;max-width:340px;margin:auto}.dt div{background:rgba(255,255,255,.65);border-radius:14px;padding:10px 0;flex:1;max-width:78px;box-shadow:0 3px 10px rgba(201,123,146,.22)}.dt small{display:block;font-size:.7rem;letter-spacing:.15em;color:#9a8fa0}.dt b{font-size:1.55rem;color:var(--rose)}.dts{display:block;margin-top:14px;font-size:.95rem;color:var(--sky)}
 .cd div{color:#9a8fa0}.cd b{color:var(--rose)}
-#ad{white-space:pre-line}
 </style></head><body>
 <div id="bg"></div>
 <script>
@@ -69,7 +68,7 @@ const CONFIG={
  GALLERY:["images/gallery-2.png","images/gallery-3.png","images/gallery-4.png","images/gallery-6.png",
           "images/gallery-7.png","images/gallery-8.png","images/gallery-9.png","images/gallery-10.png",
           "images/gallery-11.png","images/gallery-12.png"],
- BANK:"8575378206 \n(BCA) Fitri Berliana", ADDRESS:"Jl. Tempoa II No. 03. RT.015, \nKel. Cempaka Putih, Kec. Jelutung, \nKota Jambi",
+ BANK:"8575378206 \n(BCA) Fitri Berliana",
   EVENTS:{
   matrimony:{title:"Holy Matrimony",day:"Sunday, 06 December 2026",time:"07:00 – Ends",place:"Vihara Sakyakirti Jambi",map:"https://maps.app.goo.gl/JhqyBBkfE1c5MKbD7",addr:"Jl. Pangeran Diponegoro No. 56,\n Kel. Sulanjana, Kota Jambi",start:"20261206T070000",end:"20261206T110000"},
   reception:{title:"Wedding Reception",day:"Sunday, 06 December 2026",time:"18:00 – Ends",place:"De Suite Hotel (Emerald Ballroom)",map:"https://maps.app.goo.gl/VKZjCyA94EGozEgQA",addr:"Jl. Halim Perdana Kusuma No 8-11, \n Kel. Sungai Asam, Kec. Pasar Jambi, \n Kota Jambi",start:"20261206T180000",end:"20261206T220000"}
@@ -90,8 +89,8 @@ const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" ta
  <div class="card"><h3>“Two souls, but a single thought. Two hearts that beat as one.” – John Keats</h3></div></section>
  
 <section><h2>The Groom &amp; Bride</h2>
-<div class="card"><img class="pic" img src="images/gallery-5.png" alt=""><h2>Hendy Chandra</h2>third son of<br>Mr. Sugianto &amp; Mrs. Yanti</div>
-<div class="card"><img class="pic" img src="images/gallery-1.png" alt=""><h2>Fitri Berliana, S.Tr.Par</h2>youngest daughter of<br>Mr. Winardi Lie &amp; Mrs. Minati</div>
+<div class="card"><img class="pic" src="images/gallery-5.png" alt=""><h2>Hendy Chandra</h2>third son of<br>Mr. Sugianto &amp; Mrs. Yanti</div>
+<div class="card"><img class="pic" src="images/gallery-1.png" alt=""><h2>Fitri Berliana, S.Tr.Par</h2>youngest daughter of<br>Mr. Winardi Lie &amp; Mrs. Minati</div>
 </section>
 
 <section id="events"><h2>Save The Date</h2><div class="cd" id="cd"></div></section>
@@ -117,7 +116,7 @@ With love,<br><b>Hendy &amp; Fitri</b></section>
 
 <script>
 $("#g1").textContent=guest;$("#inv").textContent="Dear "+guest+",\nwith joyful hearts we invite you to share the beginning of our forever.";$("#rn").value=guest;$("#wn").value=guest;
-$("#hero").src=CONFIG.HERO;$("#bk").textContent=CONFIG.BANK;$("#ad").textContent=CONFIG.ADDRESS;
+$("#hero").src=CONFIG.HERO;$("#bk").textContent=CONFIG.BANK;
 $("#heroDate").href=calLink(CONFIG.EVENTS.reception);
 $("#events").insertAdjacentHTML("beforeend",evHTML(CONFIG.EVENTS.matrimony)+evHTML(CONFIG.EVENTS.reception));
 // music
