@@ -53,7 +53,14 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 #top{position:fixed;left:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;margin:0;padding:0;border-radius:50%;font-size:1.3rem;opacity:0;pointer-events:none;transition:opacity .3s}#top.on{opacity:1;pointer-events:auto}
 #heroDate{display:block;margin-top:6px}.dt{display:flex;gap:7px;justify-content:center;max-width:340px;margin:auto}.dt div{background:rgba(255,255,255,.65);border-radius:14px;padding:10px 0;flex:1;max-width:78px;box-shadow:0 3px 10px rgba(201,123,146,.22)}.dt small{display:block;font-size:.7rem;letter-spacing:.15em;color:#9a8fa0}.dt b{font-size:1.55rem;color:var(--rose)}.dts{display:block;margin-top:14px;font-size:.95rem;color:var(--sky)}
 .cd div{color:#9a8fa0}.cd b{color:var(--rose)}
-#bk{white-space:pre-line}
+.atm{max-width:340px;aspect-ratio:1.586;margin:16px auto;padding:18px 22px;border:2px solid var(--rose);border-radius:18px;background:rgba(255,255,255,.35);display:flex;flex-direction:column;justify-content:space-between;text-align:left;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:transform .15s,box-shadow .3s}
+.atm:active{transform:scale(.97)}.atm:focus-visible{outline:2px solid var(--sky);outline-offset:3px}
+.atm .top,.atm .bt{display:flex;justify-content:space-between;align-items:center}
+.atm .top{justify-content:flex-end}
+.atm .bkn{font-weight:600;font-size:1.5rem;letter-spacing:.14em;color:var(--sky)}
+.atm .chip{align-self:flex-start;width:44px;height:34px;border:2px solid var(--rose);border-radius:7px;background:linear-gradient(var(--rose),var(--rose)) center/100% 1.5px no-repeat,linear-gradient(var(--rose),var(--rose)) center/1.5px 100% no-repeat}
+.atm .no{font-size:1.7rem;font-weight:600;letter-spacing:.12em;color:var(--rose);font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:8px}
+.atm .bt{font-size:1rem;text-transform:uppercase;letter-spacing:.08em}.atm small{font-size:.75rem;text-transform:none;letter-spacing:.04em;color:var(--sky)}
 </style></head><body>
 <div id="bg"></div>
 <script>
@@ -68,8 +75,9 @@ const CONFIG={
  GROOM:"images/gallery-5.png",
  GALLERY:["images/gallery-2.png","images/gallery-3.png","images/gallery-4.png","images/gallery-6.png",
           "images/gallery-7.png","images/gallery-8.png","images/gallery-9.png","images/gallery-10.png",
-          "images/gallery-11.png","images/gallery-12.png"],
- BANK:"8575378206 \n(BCA) Fitri Berliana",
+          "images/gallery-11.png","images/gallery-12.png","images/gallery-13.png","images/gallery-14.png",
+          "images/gallery-15.png","images/gallery-16.png","images/gallery-17.png","images/gallery-18.png"],
+ BANK:{bank:"BCA",no:"8575378206",name:"Fitri Berliana"},
   EVENTS:{
   matrimony:{title:"Holy Matrimony",day:"Sunday, 06 December 2026",time:"07:00 – Ends",place:"Vihara Sakyakirti Jambi",map:"https://maps.app.goo.gl/JhqyBBkfE1c5MKbD7",addr:"Jl. Pangeran Diponegoro No. 56,\n Kel. Sulanjana, Kota Jambi",start:"20261206T070000",end:"20261206T110000"},
   reception:{title:"Wedding Reception",day:"Sunday, 06 December 2026",time:"18:00 – Ends",place:"De Suite Hotel (Emerald Ballroom)",map:"https://maps.app.goo.gl/VKZjCyA94EGozEgQA",addr:"Jl. Halim Perdana Kusuma No 8-11, \n Kel. Sungai Asam, Kec. Pasar Jambi, \n Kota Jambi",start:"20261206T180000",end:"20261206T220000"}
@@ -107,8 +115,13 @@ const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" ta
 <input type="text" id="wn" disabled><br><br><textarea id="wt" rows="4" maxlength="500" placeholder="Type your best wishes here ..." required></textarea>
 <button>Send Wishes</button><p id="wm"></p></form><div class="card" id="wbox"><div id="wl"></div><div class="pg" id="pg"></div></div></section>
 
-<section><h2>Wanna give us some gifts?</h2><div class="card">
-<p>Bank account<br><b id="bk"></b></p></div></section>
+<section><h2>Wanna give us some gifts?</h2>
+<div class="atm" id="atm" role="button" tabindex="0" aria-label="Tap to copy account number">
+<div class="top"><span class="bkn" id="bkn"></span></div>
+<span class="chip"></span>
+<div class="no" id="bk"></div>
+<div class="bt"><span id="bkh"></span><small id="cp">Tap to copy</small></div>
+</div></section>
  
 <section><p><h2>Thank You!</h2></p>
 <p>Thank you for being part of our story and celebrating the start of our forever</p>
@@ -117,7 +130,12 @@ With love,<br><b>Hendy &amp; Fitri</b></section>
 
 <script>
 $("#g1").textContent=guest;$("#inv").textContent="Dear "+guest+",\nwith joyful hearts we invite you to share the beginning of our forever.";$("#rn").value=guest;$("#wn").value=guest;
-$("#hero").src=CONFIG.HERO;$("#bk").textContent=CONFIG.BANK;
+$("#hero").src=CONFIG.HERO;
+$("#bkn").textContent=CONFIG.BANK.bank;$("#bk").textContent=CONFIG.BANK.no.replace(/^(\d{3})(\d{3})(\d+)$/,"$1 $2 $3");$("#bkh").textContent=CONFIG.BANK.name;
+// tap card = copy account number
+const copyTxt=async t=>{try{await navigator.clipboard.writeText(t);return true}catch(e){const a=document.createElement("textarea");a.value=t;a.style.cssText="position:fixed;opacity:0";document.body.append(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}a.remove();return ok}};
+const doCopy=async()=>{const c=$("#cp");c.textContent=(await copyTxt(CONFIG.BANK.no))?"Copied ✓":"Copy failed";setTimeout(()=>c.textContent="Tap to copy",2000)};
+$("#atm").onclick=doCopy;$("#atm").onkeydown=e=>{if(e.key=="Enter"||e.key==" "){e.preventDefault();doCopy()}};
 $("#heroDate").href=calLink(CONFIG.EVENTS.reception);
 $("#events").insertAdjacentHTML("beforeend",evHTML(CONFIG.EVENTS.matrimony)+evHTML(CONFIG.EVENTS.reception));
 // music
