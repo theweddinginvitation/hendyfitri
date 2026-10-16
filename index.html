@@ -24,8 +24,8 @@ input[disabled]{background:#f3eef0;color:#777}
 fieldset{border:0;padding:0;margin:14px 0}label{margin:0 12px}
 .wish{text-align:left;border-bottom:1px dashed var(--pink);padding:10px 0}.wish b{color:var(--rose)}
 #music{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;border-radius:50%;padding:0;font-size:1.3rem}
-#ap{position:fixed;right:16px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;margin:0;border-radius:50%;padding:0;font-size:1.1rem;line-height:1;display:flex;align-items:center;justify-content:center}
-#ap.off{font-size:.8rem}
+#ap{position:fixed;right:16px;bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;margin:0;border-radius:50%;padding:0;font-size:1.3rem;line-height:1;display:flex;align-items:center;justify-content:center}
+#ap.off{font-size:1.05rem}
 #ap::before,#music::before,#top::before{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(100% + 6px);white-space:nowrap;font-size:.7rem;font-weight:700;letter-spacing:.03em;color:var(--rose);background:rgba(255,255,255,.85);padding:4px 8px;border-radius:12px;box-shadow:0 2px 8px rgba(201,123,146,.25)}
 #ap::before{content:"Auto Scroll"}#music::before{content:"Music"}#top::before{content:"Top"}
 #mi{display:inline-block} /* only the note spins, not the label */
@@ -70,17 +70,17 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 .atm .no{font-size:1.7rem;font-weight:600;letter-spacing:.12em;color:var(--rose);font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:8px}
 .atm .bt{font-size:1rem;text-transform:uppercase;letter-spacing:.08em}.atm small{font-size:.9rem;font-weight:700;text-transform:none;letter-spacing:.04em;color:var(--sky)}
 /* glass morphism: translucent fill + backdrop blur + light edge + soft shadow */
-.card{background-color:rgba(255,255,255,.45);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);border:1px solid rgba(255,255,255,.65);box-shadow:0 8px 32px rgba(201,123,146,.18),inset 0 1px 0 rgba(255,255,255,.8)}
-.dt div,.cd div{background:rgba(255,255,255,.42);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(201,123,146,.15),inset 0 1px 0 rgba(255,255,255,.8)}
+.card{background-color:rgba(255,255,255,.23);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);border:1px solid rgba(255,255,255,.65);box-shadow:0 8px 32px rgba(201,123,146,.18),inset 0 1px 0 rgba(255,255,255,.8)}
+.dt div,.cd div{background:rgba(255,255,255,.21);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(201,123,146,.15),inset 0 1px 0 rgba(255,255,255,.8)}
 .atm{-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);box-shadow:0 8px 28px rgba(201,123,146,.2),inset 0 1px 0 rgba(255,255,255,.8)}
 .xi{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-input[type=text],textarea{background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 3px rgba(201,123,146,.15)}
-input[disabled]{background:rgba(243,238,240,.6)}
-#music,#ap,#top{background:rgba(255,255,255,.45);color:var(--rose);border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);box-shadow:0 6px 18px rgba(201,123,146,.25),inset 0 1px 0 rgba(255,255,255,.85)}
-#ap::before,#music::before,#top::before{background:rgba(255,255,255,.75);border:1px solid rgba(255,255,255,.85)}
+input[type=text],textarea{background:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 3px rgba(201,123,146,.15)}
+input[disabled]{background:rgba(243,238,240,.3)}
+#music,#ap,#top{background:rgba(255,255,255,.23);color:var(--rose);border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);box-shadow:0 6px 18px rgba(201,123,146,.25),inset 0 1px 0 rgba(255,255,255,.85)}
+#ap::before,#music::before,#top::before{background:rgba(255,255,255,.38);border:1px solid rgba(255,255,255,.85)}
 /* all buttons: Open Invitation, Open Map, Submit, Send Wishes, Prev/Next */
-.btn,button{background:rgba(255,255,255,.4);color:var(--rose);font-weight:600;border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);box-shadow:0 6px 18px rgba(201,123,146,.22),inset 0 1px 0 rgba(255,255,255,.85);transition:transform .15s,box-shadow .3s,background .3s}
-.btn:hover,button:hover:not(:disabled){background:rgba(255,255,255,.6)}
+.btn,button{background:rgba(255,255,255,.2);color:var(--rose);font-weight:600;border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);box-shadow:0 6px 18px rgba(201,123,146,.22),inset 0 1px 0 rgba(255,255,255,.85);transition:transform .15s,box-shadow .3s,background .3s}
+.btn:hover,button:hover:not(:disabled){background:rgba(255,255,255,.3)}
 .btn:active,button:active:not(:disabled){transform:scale(.97)}
 #lb button{border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
 </style></head><body>
@@ -113,7 +113,7 @@ const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" ta
 </script>
 
 <div id="cover"><div class="cbg"></div><div class="xi">囍</div><p>The Wedding of</p><h1>Hendy <br> &amp; <br>Fitri</h1><p>Dear,</p><h2 id="g1"></h2><button id="open">Open Invitation</button></div>
-<button id="ap" aria-label="Pause auto scroll">⏸</button><button id="music" aria-label="Music"><span id="mi">♪</span></button><button id="top" aria-label="Back to top">↑</button><audio id="aud" loop></audio>
+<button id="ap" aria-label="Pause auto scroll">⏸&#xFE0E;</button><button id="music" aria-label="Music"><span id="mi">♪</span></button><button id="top" aria-label="Back to top">↑</button><audio id="aud" loop></audio>
 
 <section><p><h1>We are getting married!</h1></p><img class="pic" id="hero" alt=""><h1>Hendy &amp; Fitri</h1>
 <a id="heroDate" target="_blank" rel="noopener"><span class="dt"><div><small>DAY</small><b>SUN</b></div><div><small>DATE</small><b>06</b></div><div><small>MONTH</small><b>DEC</b></div><div><small>YEAR</small><b>2026</b></div></span></a></section>
@@ -273,7 +273,7 @@ $("#open").addEventListener("click",()=>{opened=true;poke()});
 // pause / play auto scroll button (above the music button)
 const ap=$("#ap");
 ap.onclick=e=>{e.stopPropagation();clearTimeout(idleT);autoOn=!autoOn;
- ap.textContent=autoOn?"⏸":"▶";ap.classList.toggle("off",!autoOn);ap.setAttribute("aria-label",autoOn?"Pause auto scroll":"Play auto scroll");
+ ap.textContent=autoOn?"⏸\uFE0E":"▶\uFE0E";ap.classList.toggle("off",!autoOn);ap.setAttribute("aria-label",autoOn?"Pause auto scroll":"Play auto scroll");
  autoOn?startAuto():stopAuto()};
 // back-to-top button (appears after scrolling down)
 const topB=$("#top");topB.onclick=()=>scrollTo({top:0,behavior:"smooth"});
