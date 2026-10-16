@@ -74,8 +74,9 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 .dt div,.cd div{background:rgba(255,255,255,.11);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(201,123,146,.15),inset 0 1px 0 rgba(255,255,255,.8)}
 .atm{-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);box-shadow:0 8px 28px rgba(201,123,146,.2),inset 0 1px 0 rgba(255,255,255,.8)}
 .xi{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-input[type=text],textarea{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.85);box-shadow:inset 0 1px 3px rgba(201,123,146,.15)}
-input[disabled]{background:rgba(243,238,240,.15)}
+input[type=text],textarea{background:rgba(255,255,255,.15);border:2px solid var(--rose);box-shadow:inset 0 1px 3px rgba(201,123,146,.15)}
+input[type=text]:focus,textarea:focus{outline:0;border-color:var(--rose);box-shadow:0 0 0 3px rgba(201,123,146,.22)}
+input[disabled]{background:rgba(243,238,240,.15);border-color:rgba(201,123,146,.4)}
 #music,#ap,#top{background:linear-gradient(135deg,rgba(247,212,222,.5),rgba(207,227,245,.5));color:var(--rose);border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);box-shadow:0 6px 18px rgba(201,123,146,.25),inset 0 1px 0 rgba(255,255,255,.85)}
 #ap::before,#music::before,#top::before{background:rgba(255,255,255,.38);border:1px solid rgba(255,255,255,.85)}
 /* all buttons: Open Invitation, Open Map, Submit, Send Wishes, Prev/Next */
@@ -103,13 +104,13 @@ const CONFIG={
  BANK:{bank:"BCA",no:"8575378206",name:"Fitri Berliana"},
   EVENTS:{
   matrimony:{title:"Holy Matrimony",day:"Sunday, 06 December 2026",time:"07:00 – Ends",place:"Vihara Sakyakirti Jambi",map:"https://maps.app.goo.gl/JhqyBBkfE1c5MKbD7",addr:"Jl. Pangeran Diponegoro No. 56,\n Kel. Sulanjana, Kota Jambi",start:"20261206T070000",end:"20261206T110000"},
-  reception:{title:"Wedding Reception",day:"Sunday, 06 December 2026",time:"18:00 – Ends",place:"De Suite Hotel (Emerald Ballroom)",map:"https://maps.app.goo.gl/VKZjCyA94EGozEgQA",addr:"Jl. Halim Perdana Kusuma No 8-11, \n Kel. Sungai Asam, Kec. Pasar Jambi, \n Kota Jambi",start:"20261206T180000",end:"20261206T220000"}
+  reception:{title:"Wedding Reception",day:"Sunday, 06 December 2026",time:"18:00 – Ends",place:"De Suite Hotel (Emerald Ballroom)",sub:"(Ciaktok)",map:"https://maps.app.goo.gl/VKZjCyA94EGozEgQA",addr:"Jl. Halim Perdana Kusuma No 8-11, \n Kel. Sungai Asam, Kec. Pasar Jambi, \n Kota Jambi",start:"20261206T180000",end:"20261206T220000"}
  }
 };
 const $=s=>document.querySelector(s);
 const guest=(new URLSearchParams(location.search).get("to")||"Guest").trim();
 const calLink=e=>"https://calendar.google.com/calendar/render?action=TEMPLATE&ctz=Asia/Jakarta&text="+encodeURIComponent("Wedding of Hendy & Fitri – "+e.title)+"&dates="+e.start+"/"+e.end+"&location="+encodeURIComponent(e.place+", "+e.addr.replace(/\s*\n\s*/g," "))+"&details="+encodeURIComponent("You are invited to the wedding of Hendy Chandra & Fitri Berliana. "+e.title+" at "+e.place+". Map: "+e.map);
-const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" target="_blank" rel="noopener"><b> ${e.day}<br>${e.time}</b> ⎘</a><p><b>${e.place}</b><br>${e.addr.replace(/\s*\n\s*/g,"<br>")}</p><a class="btn" href="${e.map}" target="_blank" rel="noopener"> Open Map</a></div>`;
+const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" target="_blank" rel="noopener"><b> ${e.day}<br>${e.time}</b> ⎘</a><p><b>${e.place}</b>${e.sub?`<br>${e.sub}`:""}<br>${e.addr.replace(/\s*\n\s*/g,"<br>")}</p><a class="btn" href="${e.map}" target="_blank" rel="noopener"> Open Map</a></div>`;
 </script>
 
 <div id="cover"><div class="cbg"></div><div class="xi">囍</div><p>The Wedding of</p><h1>Hendy <br> &amp; <br>Fitri</h1><p>Dear,</p><h2 id="g1"></h2><button id="open">Open Invitation</button></div>
