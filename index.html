@@ -60,7 +60,7 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 .atm .bkn{font-weight:600;font-size:1.5rem;letter-spacing:.14em;color:var(--sky)}
 .atm .chip{align-self:flex-start;width:44px;height:34px;border:2px solid var(--rose);border-radius:7px;background:linear-gradient(var(--rose),var(--rose)) center/100% 1.5px no-repeat,linear-gradient(var(--rose),var(--rose)) center/1.5px 100% no-repeat}
 .atm .no{font-size:1.7rem;font-weight:600;letter-spacing:.12em;color:var(--rose);font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:8px}
-.atm .bt{font-size:1rem;text-transform:uppercase;letter-spacing:.08em}.atm small{font-size:.75rem;text-transform:none;letter-spacing:.04em;color:var(--sky)}
+.atm .bt{font-size:1rem;text-transform:uppercase;letter-spacing:.08em}.atm small{font-size:.9rem;font-weight:700;text-transform:none;letter-spacing:.04em;color:var(--sky)}
 </style></head><body>
 <div id="bg"></div>
 <script>
@@ -152,24 +152,46 @@ $("#cd").innerHTML=u.map(([n,v])=>{const x=Math.floor(d/v);d-=x*v;return`<div><b
 // fade-in
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add("show")),{threshold:.1});
 document.querySelectorAll("section").forEach(s=>io.observe(s));
+// duplicate guard (same name = one RSVP, one wish)
+const dk=t=>"done_"+t+"_"+guest.toLowerCase();
+const done=t=>{try{return localStorage.getItem(dk(t))}catch(e){return null}};
+const mark=t=>{try{localStorage.setItem(dk(t),"1")}catch(e){}};
+const lock=(f,m,t)=>{f.querySelectorAll("button,textarea,input").forEach(x=>x.disabled=true);m.textContent=t};
 // Sheets
+// returns true = saved, "dup" = server says name already exists, false = failed
 const send=async(data,msg,btn)=>{btn.disabled=true;msg.textContent="Sending…";
- try{await fetch(CONFIG.SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(data)});
- msg.textContent="Thank you!";return true}catch(e){msg.textContent="Failed, please try again.";return false}finally{btn.disabled=false}};
+ try{let r=null;
+  try{r=await(await fetch(CONFIG.SCRIPT_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(data)})).json()}
+  catch(e){await fetch(CONFIG.SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},body:JSON.stringify(data)})} // fallback: reply unreadable, server still blocks duplicates
+  if(r&&r.duplicate){mark(data.type);return "dup"}
+  if(r&&r.ok===false){msg.textContent="Failed, please try again.";return false}
+  msg.textContent="Thank you!";return true}catch(e){msg.textContent="Failed, please try again.";return false}finally{btn.disabled=false}};
 $("#rsvp").onsubmit=async e=>{e.preventDefault();const f=e.target;
- await send({type:"rsvp",name:guest,attend:f.a.value,guests:f.n.value},$("#rm"),f.querySelector("button"))};
+ if(done("rsvp"))return lock(f,$("#rm"),"You have already submitted.");
+ const r=await send({type:"rsvp",name:guest,attend:f.a.value,guests:f.n.value},$("#rm"),f.querySelector("button"));
+ if(r==="dup")lock(f,$("#rm"),"You have already submitted.");else if(r){mark("rsvp");lock(f,$("#rm"),"Thank you!")}};
+if(done("rsvp"))lock($("#rsvp"),$("#rm"),"You have already submitted.");
 let W=[],pg=1;const PER=8; // wishes per page
+const dupWish=()=>guest!="Guest"&&W.some(i=>String(i.name).trim().toLowerCase()==guest.toLowerCase());
+const lockWish=t=>lock($("#wf"),$("#wm"),t||"You have already sent your wishes.");
 const render=l=>{if(l)W=l;const n=Math.max(1,Math.ceil(W.length/PER));pg=Math.min(pg,n);const w=$("#wl");w.innerHTML="";
  if(!W.length)w.textContent="Be the first to send your wishes!";
  W.slice((pg-1)*PER,pg*PER).forEach(i=>{const d=document.createElement("div");d.className="wish";
   const b=document.createElement("b");b.textContent=i.name;const p=document.createElement("div");p.textContent=i.wish;d.append(b,p);w.append(d)});
  $("#pg").innerHTML=n>1?`<button id="pp" ${pg<2?"disabled":""}>‹ Prev</button> ${pg} / ${n} <button id="pn" ${pg>=n?"disabled":""}>Next ›</button>`:"";
- if(n>1){$("#pp").onclick=()=>{pg--;render()};$("#pn").onclick=()=>{pg++;render()}}};
+ if(n>1){$("#pp").onclick=()=>{pg--;render()};$("#pn").onclick=()=>{pg++;render()}}
+ if(done("wish")||dupWish())lockWish()};
 render([]);
 const load=()=>fetch(CONFIG.SCRIPT_URL).then(r=>r.json()).then(render).catch(()=>{});
 $("#wf").onsubmit=async e=>{e.preventDefault();const t=$("#wt").value.trim();if(!t)return;
- if(await send({type:"wish",name:guest,wish:t},$("#wm"),e.target.querySelector("button"))){$("#wt").value="";pg=1;setTimeout(load,2000)}};
+ if(done("wish")||dupWish())return lockWish();
+ const r=await send({type:"wish",name:guest,wish:t},$("#wm"),e.target.querySelector("button"));
+ if(r==="dup")lockWish();else if(r){mark("wish");$("#wt").value="";pg=1;lockWish("Thank you!");setTimeout(load,2000)}};
 if(!CONFIG.SCRIPT_URL.startsWith("PASTE"))load();
+// on open: ask server if this name already sent RSVP / wish (works across devices)
+if(guest!="Guest"&&!CONFIG.SCRIPT_URL.startsWith("PASTE"))fetch(CONFIG.SCRIPT_URL+"?check="+encodeURIComponent(guest)).then(r=>r.json()).then(c=>{
+ if(c.rsvp){mark("rsvp");lock($("#rsvp"),$("#rm"),"You have already submitted.")}
+ if(c.wish){mark("wish");lockWish()}}).catch(()=>{});
 const lb=document.createElement("div");lb.id="lb";
 lb.innerHTML='<img alt=""><button data-d="-1" style="left:8px">‹</button><button data-d="1" style="right:8px">›</button><button style="top:calc(34px + env(safe-area-inset-top,0px));right:14px">✕</button>';
 document.body.append(lb);let L=[],ix=0,x0=0;
