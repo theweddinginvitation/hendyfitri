@@ -24,6 +24,9 @@ input[disabled]{background:#f3eef0;color:#777}
 fieldset{border:0;padding:0;margin:14px 0}label{margin:0 12px}
 .wish{text-align:left;border-bottom:1px dashed var(--pink);padding:10px 0}.wish b{color:var(--rose)}
 #music{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;border-radius:50%;padding:0;font-size:1.3rem}
+#ap{position:fixed;right:16px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;margin:0;border-radius:50%;padding:0;font-size:1.1rem;line-height:1;display:flex;align-items:center;justify-content:center}
+#ap.off{font-size:.8rem}
+#ap::before{content:"Auto Scroll";position:absolute;right:0;bottom:calc(100% + 6px);white-space:nowrap;font-size:.75rem;font-weight:700;letter-spacing:.04em;color:var(--rose);background:rgba(255,255,255,.85);padding:4px 10px;border-radius:12px;box-shadow:0 2px 8px rgba(201,123,146,.25)}
 .spin{animation:s 4s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
 .pic{width:180px;height:180px;border-radius:50%;object-fit:cover;background:var(--pink);margin:auto;display:block}
 .petal{position:fixed;top:-30px;z-index:55;pointer-events:none;border-radius:150% 0 150% 0;opacity:.75;animation:fall linear infinite}
@@ -91,7 +94,7 @@ const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" ta
 </script>
 
 <div id="cover"><div class="cbg"></div><div class="xi">囍</div><p>The Wedding of</p><h1>Hendy <br> &amp; <br>Fitri</h1><p>Dear,</p><h2 id="g1"></h2><button id="open">Open Invitation</button></div>
-<button id="music" aria-label="Music">♪</button><button id="top" aria-label="Back to top">↑</button><audio id="aud" loop></audio>
+<button id="ap" aria-label="Pause auto scroll">⏸</button><button id="music" aria-label="Music">♪</button><button id="top" aria-label="Back to top">↑</button><audio id="aud" loop></audio>
 
 <section><p><h1>We are getting married!</h1></p><img class="pic" id="hero" alt=""><h1>Hendy &amp; Fitri</h1>
 <a id="heroDate" target="_blank" rel="noopener"><span class="dt"><div><small>DAY</small><b>SUN</b></div><div><small>DATE</small><b>06</b></div><div><small>MONTH</small><b>DEC</b></div><div><small>YEAR</small><b>2026</b></div></span></a></section>
@@ -227,20 +230,25 @@ const par=()=>{tick=0;const h=document.documentElement,m=Math.max(1,h.scrollHeig
 addEventListener("scroll",()=>{tick||(tick=requestAnimationFrame(par))},{passive:true});par();
 // auto scroll: starts after the invitation is opened and 5s without touching; any touch/scroll/key stops it
 const IDLE=8000,SPEED=40; // idle ms before starting, scroll speed in px per second
-let opened=false,auto=false,idleT,raf,pos=0;
+let opened=false,auto=false,autoOn=true,idleT,raf,pos=0; // autoOn = toggled by the pause button
 const atEnd=()=>scrollY>=document.documentElement.scrollHeight-innerHeight-2;
 const stopAuto=()=>{auto=false;cancelAnimationFrame(raf)};
 const startAuto=()=>{
- if(!opened||atEnd())return;
+ if(!opened||!autoOn||auto||atEnd())return;
  if(/INPUT|TEXTAREA/.test(document.activeElement.tagName)){poke();return}
  auto=true;pos=scrollY;let last=0;
  const step=ts=>{if(!auto)return;
   if(last&&!lb.classList.contains("on")){pos+=(ts-last)*SPEED/1000;scrollTo({top:pos,behavior:"instant"});if(atEnd()){stopAuto();return}}
   last=ts;raf=requestAnimationFrame(step)};
  raf=requestAnimationFrame(step)};
-const poke=()=>{stopAuto();clearTimeout(idleT);if(opened)idleT=setTimeout(startAuto,IDLE)};
+const poke=()=>{stopAuto();clearTimeout(idleT);if(opened&&autoOn)idleT=setTimeout(startAuto,IDLE)};
 ["touchstart","touchmove","touchend","wheel","keydown","mousedown","click","input"].forEach(ev=>addEventListener(ev,poke,{passive:true}));
 $("#open").addEventListener("click",()=>{opened=true;poke()});
+// pause / play auto scroll button (above the music button)
+const ap=$("#ap");
+ap.onclick=e=>{e.stopPropagation();clearTimeout(idleT);autoOn=!autoOn;
+ ap.textContent=autoOn?"⏸":"▶";ap.classList.toggle("off",!autoOn);ap.setAttribute("aria-label",autoOn?"Pause auto scroll":"Play auto scroll");
+ autoOn?startAuto():stopAuto()};
 // back-to-top button (appears after scrolling down)
 const topB=$("#top");topB.onclick=()=>scrollTo({top:0,behavior:"smooth"});
 addEventListener("scroll",()=>topB.classList.toggle("on",scrollY>400),{passive:true});
