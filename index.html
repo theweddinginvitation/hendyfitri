@@ -20,7 +20,7 @@ a{color:inherit;text-decoration:none}.btn,button{font:inherit;background:linear-
 .cd{display:flex;gap:10px;justify-content:center}.cd div{background:#fff9;border-radius:14px;padding:10px 0;width:76px;font-size:.85rem}.cd b{display:block;font-size:1.9rem}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:16px;background:var(--blue)}
 input[type=text],textarea{width:100%;font:inherit;padding:10px 14px;border:1px solid var(--pink);border-radius:12px;background:#fff}
-input[disabled]{background:#f3eef0;color:#777}
+input[readonly]{color:var(--ink);cursor:default;caret-color:transparent}
 fieldset{border:0;padding:0;margin:14px 0}label{margin:0 12px}
 .wish{text-align:left;border-bottom:1px dashed var(--pink);padding:10px 0}.wish b{color:var(--rose)}
 #music{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:40;width:48px;height:48px;border-radius:50%;padding:0;font-size:1.3rem}
@@ -69,6 +69,9 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 .atm .chip{align-self:flex-start;width:44px;height:34px;border:2px solid var(--rose);border-radius:7px;background:linear-gradient(var(--rose),var(--rose)) center/100% 1.5px no-repeat,linear-gradient(var(--rose),var(--rose)) center/1.5px 100% no-repeat}
 .atm .no{font-size:1.7rem;font-weight:600;letter-spacing:.12em;color:var(--rose);font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:8px}
 .atm .bt{font-size:1rem;text-transform:uppercase;letter-spacing:.08em}.atm small{font-size:.9rem;font-weight:700;text-transform:none;letter-spacing:.04em;color:var(--sky)}
+.vbox{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,rgba(247,212,222,.5),rgba(207,227,245,.5));border:2px solid var(--rose);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--rose)}
+.vbox span{font-size:2.2rem;line-height:1}.vbox small{font-size:.95rem;font-weight:600;letter-spacing:.04em}
+.vbox video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
 /* glass morphism: translucent fill + backdrop blur + light edge + soft shadow */
 .card{background-color:rgba(255,255,255,.12);-webkit-backdrop-filter:blur(16px) saturate(160%);backdrop-filter:blur(16px) saturate(160%);border:1px solid rgba(255,255,255,.65);box-shadow:0 8px 32px rgba(201,123,146,.18),inset 0 1px 0 rgba(255,255,255,.8)}
 .dt div,.cd div{background:rgba(255,255,255,.11);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.7);box-shadow:0 4px 14px rgba(201,123,146,.15),inset 0 1px 0 rgba(255,255,255,.8)}
@@ -76,7 +79,6 @@ footer{padding:8px 22px calc(40px + env(safe-area-inset-bottom,0px));font-size:.
 .xi{-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
 input[type=text],textarea{background:rgba(255,255,255,.15);border:2px solid var(--rose);box-shadow:inset 0 1px 3px rgba(201,123,146,.15)}
 input[type=text]:focus,textarea:focus{outline:0;border-color:var(--rose);box-shadow:0 0 0 3px rgba(201,123,146,.22)}
-input[disabled]{background:rgba(243,238,240,.15);border-color:rgba(201,123,146,.4)}
 #music,#ap,#top{background:linear-gradient(135deg,rgba(247,212,222,.5),rgba(207,227,245,.5));color:var(--rose);border:1px solid rgba(255,255,255,.75);-webkit-backdrop-filter:blur(10px) saturate(160%);backdrop-filter:blur(10px) saturate(160%);box-shadow:0 6px 18px rgba(201,123,146,.25),inset 0 1px 0 rgba(255,255,255,.85)}
 #ap::before,#music::before,#top::before{background:rgba(255,255,255,.38);border:1px solid rgba(255,255,255,.85)}
 /* all buttons: Open Invitation, Open Map, Submit, Send Wishes, Prev/Next */
@@ -91,6 +93,8 @@ input[disabled]{background:rgba(243,238,240,.15);border-color:rgba(201,123,146,.
 const CONFIG={
  SCRIPT_URL:"https://script.google.com/macros/s/AKfycbyScwrqJ-KpWjqNF0C6P1L05-NOA5xGqgKYjpYWdvV9fI14CtFvU3crPTVlMoBLmpWo/exec",
  MUSIC:"assets/music.mp3",
+ VIDEO:"",  // video file path, e.g. "assets/video.mp4" (empty = show placeholder)
+ POSTER:"", // optional cover image for the video
  HERO:"images/hero.png",
  BG:"images/bg.png",
  COVER_BG:"images/bg.png",
@@ -127,16 +131,17 @@ const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" ta
 </section>
 
 <section id="events"><h2>Save The Date</h2><div class="cd" id="cd"></div></section>
+<section><h2>Our Video</h2><div class="card"><div class="vbox" id="vbox"><span>▶&#xFE0E;</span><small>Video coming soon</small></div></div></section>
 <section><h2>Gallery</h2><div class="story paused" id="story"><div class="bars" id="bars"></div><img class="big" id="big" alt=""><img class="big" id="big2" alt=""></div><div class="th" id="th"></div></section>
 
 <section><h2>RSVP</h2><form class="card" id="rsvp">
-<input type="text" id="rn" disabled>
+<input type="text" id="rn" readonly>
 <fieldset><legend>Will you attend?</legend><label><input type="radio" name="a" value="Yes" required> Yes</label><label><input type="radio" name="a" value="No"> No</label></fieldset>
 <fieldset><legend>Number of guests</legend><label><input type="radio" name="n" value="1" required> 1</label><label><input type="radio" name="n" value="2"> 2</label></fieldset>
 <button>Submit</button><p id="rm"></p></form></section>
 
 <section><h2>Wishes</h2><form class="card" id="wf">
-<input type="text" id="wn" disabled><br><br><textarea id="wt" rows="4" maxlength="500" placeholder="Type your best wishes here ..." required></textarea>
+<input type="text" id="wn" readonly><br><br><textarea id="wt" rows="4" maxlength="500" placeholder="Type your best wishes here ..." required></textarea>
 <button>Send Wishes</button><p id="wm"></p></form><div class="card" id="wbox"><div id="wl"></div><div class="pg" id="pg"></div></div></section>
 
 <section><h2>Wanna give us some gifts?</h2>
@@ -166,6 +171,12 @@ $("#events").insertAdjacentHTML("beforeend",evHTML(CONFIG.EVENTS.matrimony)+evHT
 const aud=$("#aud"),mb=$("#music");aud.src=CONFIG.MUSIC;
 const setM=p=>$("#mi").classList.toggle("spin",p);
 mb.onclick=()=>aud.paused?aud.play().then(()=>setM(1)).catch(()=>{}):(aud.pause(),setM(0));
+// video: set CONFIG.VIDEO to replace the placeholder; music + auto scroll pause while the video plays
+if(CONFIG.VIDEO){const v=document.createElement("video");v.controls=true;v.playsInline=true;v.preload="metadata";v.src=CONFIG.VIDEO;if(CONFIG.POSTER)v.poster=CONFIG.POSTER;
+ let wasM=false; // music was playing before video started
+ v.onplay=()=>{wasM=!aud.paused;aud.pause();setM(0);vidOn=true;stopAuto()};
+ v.onpause=v.onended=()=>{vidOn=false;if(wasM){wasM=false;aud.play().then(()=>setM(1)).catch(()=>{})}poke()};
+ $("#vbox").replaceChildren(v)}
 history.scrollRestoration="manual";scrollTo(0,0);document.body.style.overflow="hidden"; // locked until opened
 $("#open").onclick=()=>{document.body.style.overflow="";scrollTo(0,0);$("#cover").classList.add("hide");aud.play().then(()=>setM(1)).catch(()=>{})};
 // countdown (WIB, UTC+7)
@@ -178,7 +189,7 @@ document.querySelectorAll("section").forEach(s=>io.observe(s));
 // duplicate guard (same name = one RSVP, one wish)
 // source of truth = Google Sheets. On submit, ask the server if the name exists; delete the row in the sheet to reset.
 const chk=async()=>{try{return await(await fetch(CONFIG.SCRIPT_URL+"?check="+encodeURIComponent(guest))).json()}catch(e){return {}}};
-const lock=(f,m,t)=>{f.querySelectorAll("button,textarea,input").forEach(x=>x.disabled=true);m.textContent=t};
+const lock=(f,m,t)=>{f.querySelectorAll("button,textarea,input").forEach(x=>{if(!x.readOnly)x.disabled=true});m.textContent=t};
 // Sheets
 // returns true = saved, "dup" = server says name already exists, false = failed
 const send=async(data,msg,btn)=>{btn.disabled=true;msg.textContent="Sending…";
@@ -257,12 +268,12 @@ const par=()=>{tick=0;const h=document.documentElement,m=Math.max(1,h.scrollHeig
 addEventListener("scroll",()=>{tick||(tick=requestAnimationFrame(par))},{passive:true});par();
 // auto scroll: starts after the invitation is opened and 5s without touching; any touch/scroll/key stops it
 const IDLE=8000,SPEED=40; // idle ms before starting, scroll speed in px per second
-let opened=false,auto=false,autoOn=true,idleT,raf,pos=0; // autoOn = toggled by the pause button
+let opened=false,auto=false,autoOn=true,vidOn=false,idleT,raf,pos=0; // autoOn = toggled by the pause button; vidOn = video playing
 const atEnd=()=>scrollY>=document.documentElement.scrollHeight-innerHeight-2;
 const stopAuto=()=>{auto=false;cancelAnimationFrame(raf)};
 const startAuto=()=>{
- if(!opened||!autoOn||auto||atEnd())return;
- if(/INPUT|TEXTAREA/.test(document.activeElement.tagName)){poke();return}
+ if(!opened||!autoOn||auto||vidOn||atEnd())return;
+ if(/INPUT|TEXTAREA/.test(document.activeElement.tagName)&&!document.activeElement.readOnly){poke();return}
  auto=true;pos=scrollY;let last=0;
  const step=ts=>{if(!auto)return;
   if(last&&!lb.classList.contains("on")){pos+=(ts-last)*SPEED/1000;scrollTo({top:pos,behavior:"instant"});if(atEnd()){stopAuto();return}}
