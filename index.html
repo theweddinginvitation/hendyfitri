@@ -185,9 +185,11 @@ const mus={on:false,mt:false,ctx:null,gain:null,buf:null,src:null,fb:!AC, // on 
  apply(){
   if(this.fb){if(!aud.getAttribute("src"))aud.src=CONFIG.MUSIC;aud.muted=this.mt;if(this.on){if(aud.paused)aud.play().catch(()=>{})}else aud.pause();this.ui();return}
   if(!this.ctx||!this.buf)return; // still loading: apply() runs again once decoded
-  this.gain.gain.value=this.mt?0:1;
-  if(this.on){if(!this.src){const s=this.src=this.ctx.createBufferSource();s.buffer=this.buf;s.loop=true;s.connect(this.gain);s.start(0)}this.ctx.resume()}
-  else this.ctx.suspend();
+  const g=this.gain.gain,c=this.ctx;clearTimeout(this.st);g.cancelScheduledValues(c.currentTime);
+  if(this.on){if(!this.src){const s=this.src=c.createBufferSource();s.buffer=this.buf;s.loop=true;s.connect(this.gain);s.start(0)}
+   c.resume();g.setTargetAtTime(this.mt?0:1,c.currentTime,.03)} // short fade, no click
+  else{g.setTargetAtTime(0,c.currentTime,.03); // fade out first, then suspend: suspending mid-sound can leave a stuck tone
+   this.st=setTimeout(()=>{if(!this.on)c.suspend()},300)}
   this.ui()},
  ui(){setM(this.on&&!this.mt)},
  stuck(){return this.on&&(this.fb?aud.paused:!!(this.ctx&&this.buf&&this.ctx.state!=="running"))},
