@@ -94,7 +94,7 @@ const CONFIG={
  SCRIPT_URL:"https://script.google.com/macros/s/AKfycbyScwrqJ-KpWjqNF0C6P1L05-NOA5xGqgKYjpYWdvV9fI14CtFvU3crPTVlMoBLmpWo/exec",
  MUSIC:"assets/music.mp3",
  VIDEO:"assets/video.mp4",  // video file path, e.g. "assets/video.mp4" (empty = show placeholder)
- POSTER:"", // optional cover image for the video
+ POSTER:"images/hero.png", // optional cover image for the video
  HERO:"images/hero.png",
  BG:"images/bg.png",
  COVER_BG:"images/bg.png",
@@ -175,8 +175,14 @@ mb.onclick=()=>aud.paused?aud.play().then(()=>setM(1)).catch(()=>{}):(aud.pause(
 if(CONFIG.VIDEO){const v=document.createElement("video");v.controls=true;v.playsInline=true;v.preload="metadata";v.src=CONFIG.VIDEO;if(CONFIG.POSTER)v.poster=CONFIG.POSTER;
  let wasM=false; // music was playing before video started
  v.onplay=()=>{wasM=!aud.paused;aud.pause();setM(0);vidOn=true;stopAuto()};
- v.onpause=v.onended=()=>{vidOn=false;if(wasM){wasM=false;aud.play().then(()=>setM(1)).catch(()=>{})}poke()};
- $("#vbox").replaceChildren(v)}
+ let byObs=false,usrP=false; // byObs = paused by scrolling away; usrP = viewer paused it manually
+ v.onpause=v.onended=()=>{if(!byObs&&!v.ended)usrP=true;byObs=false;vidOn=false;if(wasM){wasM=false;aud.play().then(()=>setM(1)).catch(()=>{})}poke()};
+ $("#vbox").replaceChildren(v);
+ // autoplay when in view (after invitation opened); pause when scrolled away. Falls back to muted if the browser blocks sound.
+ new IntersectionObserver(e=>{
+  if(e[0].isIntersecting){if(opened&&!usrP&&v.paused&&!v.ended)v.play().catch(()=>{v.muted=true;v.play().catch(()=>{})})}
+  else{usrP=false;if(!v.paused){byObs=true;v.pause()}if(v.ended)v.currentTime=0}
+ },{threshold:.6}).observe(v)}
 history.scrollRestoration="manual";scrollTo(0,0);document.body.style.overflow="hidden"; // locked until opened
 $("#open").onclick=()=>{document.body.style.overflow="";scrollTo(0,0);$("#cover").classList.add("hide");aud.play().then(()=>setM(1)).catch(()=>{})};
 // countdown (WIB, UTC+7)
