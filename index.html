@@ -93,8 +93,8 @@ input[type=text]:focus,textarea:focus{outline:0;border-color:var(--rose);box-sha
 const CONFIG={
  SCRIPT_URL:"https://script.google.com/macros/s/AKfycbyScwrqJ-KpWjqNF0C6P1L05-NOA5xGqgKYjpYWdvV9fI14CtFvU3crPTVlMoBLmpWo/exec",
  MUSIC:"assets/music.mp3",
- VIDEO:"assets/video.mp4",  // video file path, e.g. "assets/video.mp4" (empty = show placeholder)
- POSTER:"images/hero.png", // optional cover image for the video
+ VIDEO:"",  // video file path, e.g. "assets/video.mp4" (empty = show placeholder)
+ POSTER:"", // optional cover image for the video
  HERO:"images/hero.png",
  BG:"images/bg.png",
  COVER_BG:"images/bg.png",
@@ -168,15 +168,19 @@ $("#atm").onclick=doCopy;$("#atm").onkeydown=e=>{if(e.key=="Enter"||e.key==" "){
 $("#heroDate").href=calLink(CONFIG.EVENTS.reception);
 $("#events").insertAdjacentHTML("beforeend",evHTML(CONFIG.EVENTS.matrimony)+evHTML(CONFIG.EVENTS.reception));
 // music
+let wasM=false; // music was playing before video started
 const aud=$("#aud"),mb=$("#music");aud.src=CONFIG.MUSIC;
 const setM=p=>$("#mi").classList.toggle("spin",p);
-mb.onclick=()=>aud.paused?aud.play().then(()=>setM(1)).catch(()=>{}):(aud.pause(),setM(0));
+// resume music; if the browser blocks it (no user gesture), retry on the viewer's next tap
+let resumeP=false;
+const resumeM=()=>aud.play().then(()=>{resumeP=false;setM(1)}).catch(()=>{resumeP=true});
+["touchend","click","keydown"].forEach(ev=>addEventListener(ev,e=>{if(resumeP&&!vidOn&&aud.paused&&!(e.target.closest&&e.target.closest("#vbox,#music")))resumeM()},{passive:true}));
+mb.onclick=()=>{resumeP=false;if(vidOn)wasM=false;aud.paused?aud.play().then(()=>setM(1)).catch(()=>{}):(aud.pause(),setM(0))};
 // video: set CONFIG.VIDEO to replace the placeholder; music + auto scroll pause while the video plays
 if(CONFIG.VIDEO){const v=document.createElement("video");v.controls=true;v.playsInline=true;v.preload="metadata";v.src=CONFIG.VIDEO;if(CONFIG.POSTER)v.poster=CONFIG.POSTER;
- let wasM=false; // music was playing before video started
  v.onplay=()=>{wasM=!aud.paused;aud.pause();setM(0);vidOn=true;stopAuto()};
  let byObs=false,usrP=false; // byObs = paused by scrolling away; usrP = viewer paused it manually
- v.onpause=v.onended=()=>{if(!byObs&&!v.ended)usrP=true;byObs=false;vidOn=false;if(wasM){wasM=false;aud.play().then(()=>setM(1)).catch(()=>{})}poke()};
+ v.onpause=v.onended=()=>{if(!byObs&&!v.ended)usrP=true;byObs=false;vidOn=false;if(wasM){wasM=false;resumeM()}poke()};
  $("#vbox").replaceChildren(v);
  // autoplay when in view (after invitation opened); pause when scrolled away. If the browser blocks sound, the viewer taps play.
  new IntersectionObserver(e=>{
