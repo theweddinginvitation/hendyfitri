@@ -179,11 +179,12 @@ mb.onclick=()=>{resumeP=false;if(vidOn)wasM=false;
  if(aud.muted){aud.muted=false;if(aud.paused)aud.play().catch(()=>{});setM(1)}
  else aud.paused?aud.play().then(()=>setM(1)).catch(()=>{}):(aud.pause(),setM(0))};
 // video: set CONFIG.VIDEO to replace the placeholder; music + auto scroll pause while the video plays
-if(CONFIG.VIDEO){const v=document.createElement("video");v.controls=true;v.playsInline=true;v.preload="metadata";v.src=CONFIG.VIDEO;if(CONFIG.POSTER)v.poster=CONFIG.POSTER;
- v.onplay=()=>{if(!vidOn){wasM=!aud.paused&&!aud.muted;if(wasM){aud.muted=true;setM(0)}} // mute instead of pause: unmuting needs no play() permission
+let vid=null,unl=false; // vid = the video element; unl = silent unlock in progress (ignore its events)
+if(CONFIG.VIDEO){const v=document.createElement("video");vid=v;v.controls=true;v.playsInline=true;v.preload="metadata";v.src=CONFIG.VIDEO;if(CONFIG.POSTER)v.poster=CONFIG.POSTER;
+ v.onplay=()=>{if(unl)return;if(!vidOn){wasM=!aud.paused&&!aud.muted;if(wasM){aud.muted=true;setM(0)}} // mute instead of pause: unmuting needs no play() permission
   vidOn=true;stopAuto()};
  let byObs=false,usrP=false; // byObs = paused by scrolling away; usrP = viewer paused it manually
- v.onpause=v.onended=()=>{if(!byObs&&!v.ended)usrP=true;byObs=false;vidOn=false;if(wasM){wasM=false;aud.muted=false;aud.paused?resumeM():setM(1)}poke()};
+ v.onpause=v.onended=()=>{if(unl)return;if(!byObs&&!v.ended)usrP=true;byObs=false;vidOn=false;if(wasM){wasM=false;aud.muted=false;aud.paused?resumeM():setM(1)}poke()};
  $("#vbox").replaceChildren(v);
  // autoplay when in view (after invitation opened); pause when scrolled away. If the browser blocks sound, the viewer taps play.
  new IntersectionObserver(e=>{
@@ -191,7 +192,9 @@ if(CONFIG.VIDEO){const v=document.createElement("video");v.controls=true;v.plays
   else{usrP=false;if(!v.paused){byObs=true;v.pause()}if(v.ended)v.currentTime=0}
  },{threshold:.6}).observe(v)}
 history.scrollRestoration="manual";scrollTo(0,0);document.body.style.overflow="hidden"; // locked until opened
-$("#open").onclick=()=>{document.body.style.overflow="";scrollTo(0,0);$("#cover").classList.add("hide");aud.play().then(()=>setM(1)).catch(()=>{})};
+$("#open").onclick=()=>{document.body.style.overflow="";scrollTo(0,0);$("#cover").classList.add("hide");aud.play().then(()=>setM(1)).catch(()=>{});
+ // iOS Safari: a video may only start with sound after it has been played by a tap. Play+pause it once here (inside the tap) so the in-view autoplay is allowed later.
+ if(vid){unl=true;vid.play().then(()=>{vid.pause();vid.currentTime=0}).catch(()=>{}).finally(()=>setTimeout(()=>unl=false,150))}};
 // countdown (WIB, UTC+7)
 const T=new Date("2026-12-06T18:00:00+07:00");
 setInterval(()=>{let d=Math.max(0,T-new Date()),u=[["Days",864e5],["Hours",36e5],["Min",6e4],["Sec",1e3]];
