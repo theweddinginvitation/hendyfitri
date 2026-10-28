@@ -120,6 +120,8 @@ const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" ta
 <div id="cover"><div class="cbg"></div><div class="xi">囍</div><p>The Wedding of</p><h1>Hendy <br> &amp; <br>Fitri</h1><p>Dear,</p><h2 id="g1"></h2><button id="open">Open Invitation</button></div>
 <button id="ap" aria-label="Pause auto scroll">⏸&#xFE0E;</button><button id="music" aria-label="Music"><span id="mi">♪</span></button><button id="top" aria-label="Back to top">↑</button><audio id="aud" loop></audio>
 
+<section id="bn" hidden><div class="card"><h2 id="bnt"></h2><p id="bnp"></p><a class="btn" id="bnm" target="_blank" rel="noopener">Open Map</a></div></section>
+
 <section><p><h1>We are getting married!</h1></p><img class="pic" id="hero" alt=""><h1>Hendy &amp; Fitri</h1>
 <a id="heroDate" target="_blank" rel="noopener"><span class="dt"><div><small>DAY</small><b>SUN</b></div><div><small>DATE</small><b>06</b></div><div><small>MONTH</small><b>DEC</b></div><div><small>YEAR</small><b>2026</b></div></span></a></section>
 <section><p id="inv" style="font-style:italic;white-space:pre-line;margin-bottom:28px"></p>
@@ -130,7 +132,7 @@ const evHTML=e=>`<div class="card"><h2>${e.title}</h2><a href="${calLink(e)}" ta
 <div class="card"><img class="pic" src="images/gallery-1.png" alt=""><h2>Fitri Berliana, S.Tr.Par</h2>youngest daughter of<br>Mr. Winardi Lie &amp; Mrs. Minati</div>
 </section>
 
-<section id="events"><h2>Save The Date</h2><div class="cd" id="cd"></div></section>
+<section id="events"><h2>Save The Date</h2><p class="dts" id="cdl"></p><div class="cd" id="cd"></div></section>
 <section><h2>Our Video</h2><div class="card"><div class="vbox" id="vbox"><span>▶&#xFE0E;</span><small>Video coming soon</small></div></div></section>
 <section><h2>Gallery</h2><div class="story paused" id="story"><div class="bars" id="bars"></div><img class="big" id="big" alt=""><img class="big" id="big2" alt=""></div><div class="th" id="th"></div></section>
 
@@ -214,10 +216,6 @@ history.scrollRestoration="manual";scrollTo(0,0);document.body.style.overflow="h
 $("#open").onclick=()=>{document.body.style.overflow="";scrollTo(0,0);$("#cover").classList.add("hide");mus.init();mus.play();
  // iOS Safari: a video may only start with sound after it has been played by a tap. Play+pause it once here (inside the tap) so the in-view autoplay is allowed later.
  if(vid){unl=true;vid.play().then(()=>{vid.pause();vid.currentTime=0}).catch(()=>{}).finally(()=>setTimeout(()=>unl=false,150))}};
-// countdown (WIB, UTC+7)
-const T=new Date("2026-12-06T18:00:00+07:00");
-setInterval(()=>{let d=Math.max(0,T-new Date()),u=[["Days",864e5],["Hours",36e5],["Min",6e4],["Sec",1e3]];
-$("#cd").innerHTML=u.map(([n,v])=>{const x=Math.floor(d/v);d-=x*v;return`<div><b>${x}</b>${n}</div>`}).join("")},1000);
 // fade-in
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add("show")),{threshold:.1});
 document.querySelectorAll("section").forEach(s=>io.observe(s));
@@ -257,8 +255,36 @@ $("#wf").onsubmit=async e=>{e.preventDefault();const t=$("#wt").value.trim();if(
 if(!CONFIG.SCRIPT_URL.startsWith("PASTE"))load();
 // on open: ask server if this name already sent RSVP / wish (works across devices)
 if(guest!="Guest"&&!CONFIG.SCRIPT_URL.startsWith("PASTE"))fetch(CONFIG.SCRIPT_URL+"?check="+encodeURIComponent(guest)).then(r=>r.json()).then(c=>{
- if(c.rsvp)lock($("#rsvp"),$("#rm"),"You have already submitted.");
- if(c.wish)lockWish()}).catch(()=>{});
+ if(c.rsvp&&mode()!="post")lock($("#rsvp"),$("#rm"),"You have already submitted.");
+ if(c.wish&&mode()!="post")lockWish()}).catch(()=>{});
+// time modes (WIB, UTC+7): before = countdown to reception; 06 Dec = banner + countdown to next event; from 07 Dec 00:00 = thank-you banner, RSVP + wishes closed, gallery stays.
+// Test: add ?now=2026-12-06T10:00 (or 2026-12-08T09:00) to the URL
+const q0=new URLSearchParams(location.search).get("now"),off0=q0?new Date(q0+"+07:00")-Date.now():0,off=isNaN(off0)?0:off0;
+const NOW=()=>new Date(Date.now()+off);
+const T=new Date("2026-12-06T18:00:00+07:00");
+const ts=s=>new Date(s.replace(/^(\d{4})(\d\d)(\d\d)T(\d\d)(\d\d)(\d\d)$/,"$1-$2-$3T$4:$5:$6+07:00"));
+const EV=Object.values(CONFIG.EVENTS).map(e=>({e,s:ts(e.start),n:ts(e.end)}));
+const D0=new Date("2026-12-06T00:00:00+07:00"),D1=new Date("2026-12-07T00:00:00+07:00");
+const mode=()=>{const n=NOW();return n>=D1?"post":n>=D0?"today":"pre"};
+const bn=$("#bn"),bnm=$("#bnm"),cdl=$("#cdl"),cdE=$("#cd");let bk="",cl=0; // bk = banner key (redraw only on change), cl = forms already closed
+const upd=()=>{const now=NOW(),m=mode(),pick=EV.find(x=>now<x.n);let tgt=null,lab="";
+ if(m=="pre")tgt=T;
+ else if(m=="today"){const live=EV.find(x=>x.s<=now&&now<x.n),nx=EV.find(x=>x.s>now);
+  if(live)lab=live.e.title+" is happening now";
+  else if(nx){tgt=nx.s;lab="Next: "+nx.e.title}
+  else lab="Thank you for celebrating with us"}
+ cdl.textContent=lab;cdE.style.display=tgt?"":"none";
+ if(tgt){let d=Math.max(0,tgt-now);const u=[["Days",864e5],["Hours",36e5],["Min",6e4],["Sec",1e3]];
+  cdE.innerHTML=u.map(([n,v])=>{const x=Math.floor(d/v);d-=x*v;return`<div><b>${x}</b>${n}</div>`}).join("")}
+ const k=m+(pick?pick.e.title:"");
+ if(k!=bk){bk=k;bn.hidden=m=="pre";
+  if(m=="today"){$("#bnt").textContent="Today is the day";
+   $("#bnp").textContent="Hendy & Fitri are getting married. We can't wait to celebrate with you.";
+   if(pick){bnm.href=pick.e.map;bnm.textContent="Open Map: "+pick.e.title;bnm.style.display=""}else bnm.style.display="none"}
+  if(m=="post"){$("#bnt").textContent="Thank you";
+   $("#bnp").textContent="Thank you for celebrating with us. Your love and prayers made our day.";bnm.style.display="none"}}
+ if(m=="post"&&!cl){cl=1;lock($("#rsvp"),$("#rm"),"RSVP is closed.");lock($("#wf"),$("#wm"),"Wishes are closed.")}};
+upd();setInterval(upd,1000);
 const lb=document.createElement("div");lb.id="lb";
 lb.innerHTML='<img alt=""><button data-d="-1" style="left:8px">‹</button><button data-d="1" style="right:8px">›</button><button style="top:calc(34px + env(safe-area-inset-top,0px));right:14px">✕</button>';
 document.body.append(lb);let L=[],ix=0,x0=0;
@@ -325,9 +351,12 @@ ap.onclick=e=>{e.stopPropagation();clearTimeout(idleT);autoOn=!autoOn;
 // back-to-top button (appears after scrolling down)
 const topB=$("#top");topB.onclick=()=>scrollTo({top:0,behavior:"smooth"});
 addEventListener("scroll",()=>topB.classList.toggle("on",scrollY>400),{passive:true});
-// falling petals (change PETALS to add/remove)
-const PETALS=16,cols=["#f9c9d6","#f3a9bf","#fbdde5","#bcd8f0"];
-for(let i=0;i<PETALS;i++){const p=document.createElement("i"),s=10+Math.random()*10;p.className="petal";
- p.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${cols[i%4]};animation-duration:${9+Math.random()*8}s;animation-delay:-${Math.random()*14}s;--dx:${(Math.random()-.5)*160}px`;
- document.body.append(p)}
+// falling petals: PETALS = always on, BURST = extra petals spawned over 3s when the invitation opens (fall once, then removed)
+const PETALS=16,BURST=45,cols=["#f9c9d6","#f3a9bf","#fbdde5","#bcd8f0"];
+const mkP=(i,b)=>{const p=document.createElement("i"),s=10+Math.random()*10;p.className="petal";
+ p.style.cssText=`left:${Math.random()*100}vw;width:${s}px;height:${s}px;background:${cols[i%4]};animation-duration:${b?5+Math.random()*4:9+Math.random()*8}s;animation-delay:${b?Math.random()*3:-Math.random()*14}s;--dx:${(Math.random()-.5)*160}px`;
+ if(b){p.style.animationIterationCount="1";p.addEventListener("animationend",()=>p.remove())}
+ document.body.append(p)};
+for(let i=0;i<PETALS;i++)mkP(i);
+$("#open").addEventListener("click",()=>{for(let i=0;i<BURST;i++)mkP(i,1)});
 </script></body></html>
