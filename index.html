@@ -214,10 +214,9 @@ if(CONFIG.VIDEO){const v=document.createElement("video");vid=v;v.controls=true;v
  let byObs=false,usrP=false; // byObs = paused by scrolling away; usrP = viewer paused it manually
  v.onpause=v.onended=()=>{if(unl)return;if(!byObs&&!v.ended)usrP=true;byObs=false;vidOn=false;if(wasM){wasM=false;mus.mute(false)}poke()};
  $("#vbox").replaceChildren(v);
- // autoplay when in view (after invitation opened); pause when scrolled away. If the browser blocks sound, the viewer taps play.
+ // no autoplay: viewer taps play. Video still pauses when scrolled away.
  new IntersectionObserver(e=>{
-  if(e[0].isIntersecting){if(opened&&!usrP&&v.paused&&!v.ended)v.play().catch(()=>{})}
-  else{usrP=false;if(!v.paused){byObs=true;v.pause()}if(v.ended)v.currentTime=0}
+  if(!e[0].isIntersecting){usrP=false;if(!v.paused){byObs=true;v.pause()}if(v.ended)v.currentTime=0}
  },{threshold:.6}).observe(v)}
 history.scrollRestoration="manual";scrollTo(0,0);document.body.style.overflow="hidden"; // locked until opened
 $("#open").onclick=()=>{document.body.style.overflow="";scrollTo(0,0);$("#cover").classList.add("hide");mus.init();mus.play();
