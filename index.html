@@ -219,9 +219,7 @@ if(CONFIG.VIDEO){const v=document.createElement("video");vid=v;v.controls=true;v
   if(!e[0].isIntersecting){usrP=false;if(!v.paused){byObs=true;v.pause()}if(v.ended)v.currentTime=0}
  },{threshold:.6}).observe(v)}
 history.scrollRestoration="manual";scrollTo(0,0);document.body.style.overflow="hidden"; // locked until opened
-$("#open").onclick=()=>{document.body.style.overflow="";scrollTo(0,0);$("#cover").classList.add("hide");mus.init();mus.play();
- // iOS Safari: a video may only start with sound after it has been played by a tap. Play+pause it once here (inside the tap) so the in-view autoplay is allowed later.
- if(vid){unl=true;vid.play().then(()=>{vid.pause();vid.currentTime=0}).catch(()=>{}).finally(()=>setTimeout(()=>unl=false,150))}};
+$("#open").onclick=()=>{document.body.style.overflow="";scrollTo(0,0);$("#cover").classList.add("hide");mus.init();mus.play()};
 // fade-in
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add("show")),{threshold:.1});
 document.querySelectorAll("section").forEach(s=>io.observe(s));
